@@ -54,15 +54,13 @@ export default function ImpactAssessment() {
 
     if (!selectedThreat) return;
 
-    const weightedScore = calculateWeightedImpactScore(
-      { ...formData, threatId: selectedThreat },
-      {
-        financial: formData.financial,
-        reputational: formData.reputational,
-        operational: formData.operational,
-        regulatory: formData.regulatory,
-      }
-    );
+    const weightedScore = calculateWeightedImpactScore({
+      threatId: selectedThreat,
+      financial: formData.financial,
+      reputational: formData.reputational,
+      operational: formData.operational,
+      regulatory: formData.regulatory,
+    });
     const newAssessment: ImpactAssessmentType = {
       threatId: selectedThreat,
       financial: formData.financial,
@@ -316,26 +314,22 @@ export default function ImpactAssessment() {
               </div>
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${getImpactColor(
-                  calculateWeightedImpactScore(
-                    { ...formData, threatId: selectedThreat },
-                    {
-                      financial: formData.financial,
-                      reputational: formData.reputational,
-                      operational: formData.operational,
-                      regulatory: formData.regulatory,
-                    }
-                  )
-                )}`}
-              >
-                {calculateWeightedImpactScore(
-                  { ...formData, threatId: selectedThreat },
-                  {
+                  calculateWeightedImpactScore({
+                    threatId: selectedThreat,
                     financial: formData.financial,
                     reputational: formData.reputational,
                     operational: formData.operational,
                     regulatory: formData.regulatory,
-                  }
-                ).toFixed(1)}
+                  })
+                )}`}
+              >
+                {calculateWeightedImpactScore({
+                  threatId: selectedThreat,
+                  financial: formData.financial,
+                  reputational: formData.reputational,
+                  operational: formData.operational,
+                  regulatory: formData.regulatory,
+                }).toFixed(1)}
               </span>
             </div>
             <div className="mt-2 text-xs text-gray-600">

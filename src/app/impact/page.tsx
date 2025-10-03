@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ImpactAssessment, Threat } from "@/types";
+import { ImpactAssessment as ImpactAssessmentType, Threat } from "@/types";
 import {
   calculateWeightedImpactScore,
   getScoreLabel,
@@ -30,14 +30,14 @@ const sampleThreats: Threat[] = [
 ];
 
 export default function ImpactAssessment() {
-  const [assessments, setAssessments] = useState<ImpactAssessment[]>([
+  const [assessments, setAssessments] = useState<ImpactAssessmentType[]>([
     {
       threatId: "T001",
       financial: 5,
       reputational: 5,
       operational: 4,
       regulatory: 5,
-      weightedImpactScore: 4.8,
+      weightedImpactScore: 91.0,
     },
   ]);
 
@@ -54,8 +54,16 @@ export default function ImpactAssessment() {
 
     if (!selectedThreat) return;
 
-    const weightedScore = calculateWeightedImpactScore(formData);
-    const newAssessment: ImpactAssessment = {
+    const weightedScore = calculateWeightedImpactScore(
+      { ...formData, threatId: selectedThreat },
+      {
+        financial: formData.financial,
+        reputational: formData.reputational,
+        operational: formData.operational,
+        regulatory: formData.regulatory,
+      }
+    );
+    const newAssessment: ImpactAssessmentType = {
       threatId: selectedThreat,
       financial: formData.financial,
       reputational: formData.reputational,
@@ -116,7 +124,7 @@ export default function ImpactAssessment() {
               required
               value={selectedThreat}
               onChange={(e) => setSelectedThreat(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
             >
               <option value="">Choose a threat to assess</option>
               {sampleThreats.map((threat) => (
@@ -139,7 +147,10 @@ export default function ImpactAssessment() {
               </div>
               <div className="space-y-2">
                 {[1, 2, 3, 4, 5].map((score) => (
-                  <label key={score} className="flex items-center">
+                  <label
+                    key={score}
+                    className="flex items-center text-gray-500"
+                  >
                     <input
                       type="radio"
                       name="financial"
@@ -178,7 +189,10 @@ export default function ImpactAssessment() {
               </div>
               <div className="space-y-2">
                 {[1, 2, 3, 4, 5].map((score) => (
-                  <label key={score} className="flex items-center">
+                  <label
+                    key={score}
+                    className="flex items-center text-gray-500"
+                  >
                     <input
                       type="radio"
                       name="reputational"
@@ -217,7 +231,10 @@ export default function ImpactAssessment() {
               </div>
               <div className="space-y-2">
                 {[1, 2, 3, 4, 5].map((score) => (
-                  <label key={score} className="flex items-center">
+                  <label
+                    key={score}
+                    className="flex items-center text-gray-500"
+                  >
                     <input
                       type="radio"
                       name="operational"
@@ -256,7 +273,10 @@ export default function ImpactAssessment() {
               </div>
               <div className="space-y-2">
                 {[1, 2, 3, 4, 5].map((score) => (
-                  <label key={score} className="flex items-center">
+                  <label
+                    key={score}
+                    className="flex items-center text-gray-500"
+                  >
                     <input
                       type="radio"
                       name="regulatory"
@@ -296,10 +316,26 @@ export default function ImpactAssessment() {
               </div>
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${getImpactColor(
-                  calculateWeightedImpactScore(formData)
+                  calculateWeightedImpactScore(
+                    { ...formData, threatId: selectedThreat },
+                    {
+                      financial: formData.financial,
+                      reputational: formData.reputational,
+                      operational: formData.operational,
+                      regulatory: formData.regulatory,
+                    }
+                  )
                 )}`}
               >
-                {calculateWeightedImpactScore(formData).toFixed(1)}
+                {calculateWeightedImpactScore(
+                  { ...formData, threatId: selectedThreat },
+                  {
+                    financial: formData.financial,
+                    reputational: formData.reputational,
+                    operational: formData.operational,
+                    regulatory: formData.regulatory,
+                  }
+                ).toFixed(1)}
               </span>
             </div>
             <div className="mt-2 text-xs text-gray-600">
@@ -328,19 +364,19 @@ export default function ImpactAssessment() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div className="flex items-center">
             <DollarSign className="h-4 w-4 text-green-600 mr-2" />
-            <span>Financial: 30%</span>
+            <span className="text-gray-500">Financial: 30%</span>
           </div>
           <div className="flex items-center">
             <Users className="h-4 w-4 text-blue-600 mr-2" />
-            <span>Reputational: 30%</span>
+            <span className="text-gray-500">Reputational: 30%</span>
           </div>
           <div className="flex items-center">
             <Settings className="h-4 w-4 text-orange-600 mr-2" />
-            <span>Operational: 20%</span>
+            <span className="text-gray-500">Operational: 20%</span>
           </div>
           <div className="flex items-center">
             <Shield className="h-4 w-4 text-purple-600 mr-2" />
-            <span>Regulatory: 20%</span>
+            <span className="text-gray-500">Regulatory: 20%</span>
           </div>
         </div>
       </div>
@@ -419,4 +455,3 @@ export default function ImpactAssessment() {
     </div>
   );
 }
-

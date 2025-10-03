@@ -60,7 +60,7 @@ export default function RiskMatrix({ data }: RiskMatrixProps) {
 
       {matrix.map((row, likelihoodIndex) => (
         <div key={likelihoodIndex} className="grid grid-cols-6 gap-1">
-          <div className="text-xs font-medium flex items-center justify-center">
+          <div className="text-xs font-medium flex items-center justify-center text-gray-700">
             {likelihoodIndex === 0
               ? "Very Low"
               : likelihoodIndex === 1
@@ -95,4 +95,3 @@ export default function RiskMatrix({ data }: RiskMatrixProps) {
     </div>
   );
 }
-

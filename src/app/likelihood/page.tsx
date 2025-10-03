@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { LikelihoodAssessment, Threat } from "@/types";
+import {
+  LikelihoodAssessment as LikelihoodAssessmentType,
+  Threat,
+} from "@/types";
 import {
   calculateLikelihoodScore,
   getScoreLabel,
@@ -30,7 +33,7 @@ const sampleThreats: Threat[] = [
 ];
 
 export default function LikelihoodAssessment() {
-  const [assessments, setAssessments] = useState<LikelihoodAssessment[]>([
+  const [assessments, setAssessments] = useState<LikelihoodAssessmentType[]>([
     {
       threatId: "T001",
       threatActorCapability: 4,
@@ -52,8 +55,11 @@ export default function LikelihoodAssessment() {
 
     if (!selectedThreat) return;
 
-    const likelihoodScore = calculateLikelihoodScore(formData);
-    const newAssessment: LikelihoodAssessment = {
+    const likelihoodScore = calculateLikelihoodScore({
+      ...formData,
+      threatId: selectedThreat,
+    });
+    const newAssessment: LikelihoodAssessmentType = {
       threatId: selectedThreat,
       threatActorCapability: formData.threatActorCapability,
       opportunity: formData.opportunity,
@@ -114,7 +120,7 @@ export default function LikelihoodAssessment() {
               required
               value={selectedThreat}
               onChange={(e) => setSelectedThreat(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
             >
               <option value="">Choose a threat to assess</option>
               {sampleThreats.map((threat) => (
@@ -136,7 +142,10 @@ export default function LikelihoodAssessment() {
               </div>
               <div className="space-y-2">
                 {[1, 2, 3, 4, 5].map((score) => (
-                  <label key={score} className="flex items-center">
+                  <label
+                    key={score}
+                    className="flex items-center text-gray-500"
+                  >
                     <input
                       type="radio"
                       name="threatActorCapability"
@@ -174,7 +183,10 @@ export default function LikelihoodAssessment() {
               </div>
               <div className="space-y-2">
                 {[1, 2, 3, 4, 5].map((score) => (
-                  <label key={score} className="flex items-center">
+                  <label
+                    key={score}
+                    className="flex items-center text-gray-500"
+                  >
                     <input
                       type="radio"
                       name="opportunity"
@@ -212,7 +224,10 @@ export default function LikelihoodAssessment() {
               </div>
               <div className="space-y-2">
                 {[1, 2, 3, 4, 5].map((score) => (
-                  <label key={score} className="flex items-center">
+                  <label
+                    key={score}
+                    className="flex items-center text-gray-500"
+                  >
                     <input
                       type="radio"
                       name="historicalPrecedent"
@@ -252,10 +267,16 @@ export default function LikelihoodAssessment() {
               </div>
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${getLikelihoodColor(
-                  calculateLikelihoodScore(formData)
+                  calculateLikelihoodScore({
+                    ...formData,
+                    threatId: selectedThreat,
+                  })
                 )}`}
               >
-                {calculateLikelihoodScore(formData).toFixed(1)}
+                {calculateLikelihoodScore({
+                  ...formData,
+                  threatId: selectedThreat,
+                }).toFixed(1)}
               </span>
             </div>
             <div className="mt-2 text-xs text-gray-600">
@@ -380,4 +401,3 @@ export default function LikelihoodAssessment() {
     </div>
   );
 }
-

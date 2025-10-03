@@ -224,7 +224,7 @@ export default function RiskCalculation() {
             <select
               value={filterLevel}
               onChange={(e) => setFilterLevel(e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
             >
               <option value="All">All</option>
               <option value="Critical">Critical</option>
@@ -240,7 +240,7 @@ export default function RiskCalculation() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
             >
               <option value="totalRiskScore">Risk Score (High to Low)</option>
               <option value="threatName">Threat Name (A to Z)</option>
@@ -394,4 +394,3 @@ export default function RiskCalculation() {
     </div>
   );
 }
-

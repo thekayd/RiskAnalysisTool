@@ -12,7 +12,6 @@ import {
   BarChart3,
   Download,
 } from "lucide-react";
-import RiskMatrix from "@/components/RiskMatrix";
 import RiskChart from "@/components/RiskChart";
 import { exportToExcel } from "@/utils/excelExport";
 
@@ -131,19 +130,12 @@ export default function Dashboard() {
       </div>
 
       {/* Charts and Visualizations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Risk Distribution
           </h3>
           <RiskChart data={data.riskCalculations} />
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Risk Matrix
-          </h3>
-          <RiskMatrix data={data.riskCalculations} />
         </div>
       </div>
 

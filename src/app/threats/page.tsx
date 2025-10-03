@@ -151,7 +151,7 @@ export default function ThreatRegister() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                   placeholder="Enter threat name"
                 />
               </div>
@@ -169,7 +169,7 @@ export default function ThreatRegister() {
                       category: e.target.value as ThreatCategory,
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                 >
                   {threatCategories.map((category) => (
                     <option key={category} value={category}>
@@ -191,7 +191,7 @@ export default function ThreatRegister() {
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                 placeholder="Describe the threat in detail"
               />
             </div>
@@ -208,7 +208,7 @@ export default function ThreatRegister() {
                   onChange={(e) =>
                     setFormData({ ...formData, owner: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                   placeholder="Responsible team/person"
                 />
               </div>
@@ -224,7 +224,7 @@ export default function ThreatRegister() {
                   onChange={(e) =>
                     setFormData({ ...formData, dateIdentified: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                 />
               </div>
 
@@ -241,7 +241,7 @@ export default function ThreatRegister() {
                       status: e.target.value as Threat["status"],
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                 >
                   <option value="Open">Open</option>
                   <option value="In Progress">In Progress</option>
@@ -372,4 +372,3 @@ export default function ThreatRegister() {
     </div>
   );
 }
-

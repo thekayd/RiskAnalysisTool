@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LikelihoodAssessment as LikelihoodAssessmentType,
   Threat,
@@ -9,6 +9,11 @@ import {
   calculateLikelihoodScore,
   getScoreLabel,
 } from "@/utils/riskCalculations";
+import {
+  saveLikelihoodAssessments,
+  loadLikelihoodAssessments,
+  loadThreats,
+} from "@/utils/localStorage";
 import { User, Target, History, Calculator } from "lucide-react";
 
 const sampleThreats: Threat[] = [
@@ -33,22 +38,34 @@ const sampleThreats: Threat[] = [
 ];
 
 export default function LikelihoodAssessment() {
-  const [assessments, setAssessments] = useState<LikelihoodAssessmentType[]>([
-    {
-      threatId: "T001",
-      threatActorCapability: 4,
-      opportunity: 4,
-      historicalPrecedent: 4,
-      likelihoodScore: 4.0,
-    },
-  ]);
-
+  const [assessments, setAssessments] = useState<LikelihoodAssessmentType[]>(
+    []
+  );
+  const [threats, setThreats] = useState<Threat[]>([]);
   const [selectedThreat, setSelectedThreat] = useState<string>("");
   const [formData, setFormData] = useState({
     threatActorCapability: 1,
     opportunity: 1,
     historicalPrecedent: 1,
   });
+
+  // this function loads the data from localStorage on component mount
+  useEffect(() => {
+    const defaultAssessments: LikelihoodAssessmentType[] = [
+      {
+        threatId: "T001",
+        threatActorCapability: 4,
+        opportunity: 4,
+        historicalPrecedent: 4,
+        likelihoodScore: 4.0,
+      },
+    ];
+
+    const savedAssessments = loadLikelihoodAssessments(defaultAssessments);
+    const savedThreats = loadThreats();
+    setAssessments(savedAssessments);
+    setThreats(savedThreats);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,16 +84,20 @@ export default function LikelihoodAssessment() {
       likelihoodScore: likelihoodScore,
     };
 
+    let updatedAssessments: LikelihoodAssessmentType[];
     const existingIndex = assessments.findIndex(
       (a) => a.threatId === selectedThreat
     );
     if (existingIndex >= 0) {
-      setAssessments(
-        assessments.map((a, i) => (i === existingIndex ? newAssessment : a))
+      updatedAssessments = assessments.map((a, i) =>
+        i === existingIndex ? newAssessment : a
       );
     } else {
-      setAssessments([...assessments, newAssessment]);
+      updatedAssessments = [...assessments, newAssessment];
     }
+
+    setAssessments(updatedAssessments);
+    saveLikelihoodAssessments(updatedAssessments);
 
     setFormData({
       threatActorCapability: 1,
@@ -106,7 +127,6 @@ export default function LikelihoodAssessment() {
         </p>
       </div>
 
-      {/* Assessment Form */}
       <div className="bg-white p-6 rounded-lg shadow-sm border">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Assess Threat Likelihood
@@ -123,7 +143,7 @@ export default function LikelihoodAssessment() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
             >
               <option value="">Choose a threat to assess</option>
-              {sampleThreats.map((threat) => (
+              {threats.map((threat) => (
                 <option key={threat.id} value={threat.id}>
                   {threat.name}
                 </option>
@@ -132,7 +152,6 @@ export default function LikelihoodAssessment() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Threat Actor Capability */}
             <div className="space-y-3">
               <div className="flex items-center">
                 <User className="h-5 w-5 text-red-600 mr-2" />
@@ -173,7 +192,6 @@ export default function LikelihoodAssessment() {
               </div>
             </div>
 
-            {/* Opportunity */}
             <div className="space-y-3">
               <div className="flex items-center">
                 <Target className="h-5 w-5 text-orange-600 mr-2" />
@@ -214,7 +232,6 @@ export default function LikelihoodAssessment() {
               </div>
             </div>
 
-            {/* Historical Precedent */}
             <div className="space-y-3">
               <div className="flex items-center">
                 <History className="h-5 w-5 text-blue-600 mr-2" />
@@ -256,7 +273,6 @@ export default function LikelihoodAssessment() {
             </div>
           </div>
 
-          {/* Likelihood Score Preview */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -297,7 +313,6 @@ export default function LikelihoodAssessment() {
         </form>
       </div>
 
-      {/* Likelihood Factors Information */}
       <div className="bg-blue-50 p-4 rounded-lg">
         <h3 className="font-semibold text-blue-900 mb-2">
           Likelihood Assessment Factors
@@ -339,7 +354,6 @@ export default function LikelihoodAssessment() {
         </div>
       </div>
 
-      {/* Assessment Results */}
       <div className="bg-white rounded-lg shadow-sm border">
         <div className="px-6 py-4 border-b">
           <h3 className="text-lg font-semibold text-gray-900">
@@ -369,7 +383,7 @@ export default function LikelihoodAssessment() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {assessments.map((assessment) => {
-                const threat = sampleThreats.find(
+                const threat = threats.find(
                   (t) => t.id === assessment.threatId
                 );
                 return (

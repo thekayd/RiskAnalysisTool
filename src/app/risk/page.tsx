@@ -12,6 +12,13 @@ import {
   determineRiskLevel,
   getRiskLevelColor,
 } from "@/utils/riskCalculations";
+import {
+  saveRiskCalculations,
+  loadRiskCalculations,
+  loadThreats,
+  loadImpactAssessments,
+  loadLikelihoodAssessments,
+} from "@/utils/localStorage";
 import { AlertTriangle, TrendingUp, BarChart3, Filter } from "lucide-react";
 
 const sampleThreats: Threat[] = [
@@ -75,18 +82,36 @@ export default function RiskCalculation() {
   const [riskCalculations, setRiskCalculations] = useState<RiskCalculation[]>(
     []
   );
+  const [threats, setThreats] = useState<Threat[]>([]);
+  const [impactAssessments, setImpactAssessments] = useState<
+    ImpactAssessment[]
+  >([]);
+  const [likelihoodAssessments, setLikelihoodAssessments] = useState<
+    LikelihoodAssessment[]
+  >([]);
+
+  // this function loads the data from localStorage on component mount
+  useEffect(() => {
+    const savedThreats = loadThreats();
+    const savedImpactAssessments = loadImpactAssessments();
+    const savedLikelihoodAssessments = loadLikelihoodAssessments();
+    const savedRiskCalculations = loadRiskCalculations();
+
+    setThreats(savedThreats);
+    setImpactAssessments(savedImpactAssessments);
+    setLikelihoodAssessments(savedLikelihoodAssessments);
+    setRiskCalculations(savedRiskCalculations);
+  }, []);
   const [filterLevel, setFilterLevel] = useState<string>("All");
   const [sortBy, setSortBy] = useState<string>("totalRiskScore");
 
   useEffect(() => {
-    // Calculate risks based on impact and likelihood assessments
+    // this then calculates the risks based on impact and likelihood assessments
     const calculations: RiskCalculation[] = [];
 
-    sampleThreats.forEach((threat) => {
-      const impact = sampleImpactAssessments.find(
-        (i) => i.threatId === threat.id
-      );
-      const likelihood = sampleLikelihoodAssessments.find(
+    threats.forEach((threat) => {
+      const impact = impactAssessments.find((i) => i.threatId === threat.id);
+      const likelihood = likelihoodAssessments.find(
         (l) => l.threatId === threat.id
       );
 
@@ -109,7 +134,8 @@ export default function RiskCalculation() {
     });
 
     setRiskCalculations(calculations);
-  }, []);
+    saveRiskCalculations(calculations);
+  }, [threats, impactAssessments, likelihoodAssessments]);
 
   const filteredRisks = riskCalculations
     .filter((risk) => filterLevel === "All" || risk.riskLevel === filterLevel)
@@ -142,7 +168,6 @@ export default function RiskCalculation() {
         </p>
       </div>
 
-      {/* Risk Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
@@ -213,7 +238,6 @@ export default function RiskCalculation() {
         </div>
       </div>
 
-      {/* Filters and Controls */}
       <div className="bg-white p-4 rounded-lg shadow-sm border">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center space-x-2">
@@ -250,7 +274,6 @@ export default function RiskCalculation() {
         </div>
       </div>
 
-      {/* Risk Calculation Formula */}
       <div className="bg-blue-50 p-4 rounded-lg">
         <h3 className="font-semibold text-blue-900 mb-2">
           Risk Calculation Formula
@@ -283,7 +306,6 @@ export default function RiskCalculation() {
         </div>
       </div>
 
-      {/* Risk Results Table */}
       <div className="bg-white rounded-lg shadow-sm border">
         <div className="px-6 py-4 border-b">
           <h3 className="text-lg font-semibold text-gray-900">
@@ -353,7 +375,6 @@ export default function RiskCalculation() {
         </div>
       </div>
 
-      {/* Risk Level Legend */}
       <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="font-semibold text-gray-900 mb-3">Risk Level Legend</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

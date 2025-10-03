@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Countermeasure, NISTFunction, Threat } from "@/types";
 import {
   calculateResidualRiskScore,
   validateEffectiveness,
 } from "@/utils/riskCalculations";
+import {
+  saveCountermeasures,
+  loadCountermeasures,
+  loadThreats,
+} from "@/utils/localStorage";
 import {
   Plus,
   Edit,
@@ -46,19 +51,30 @@ const nistFunctions: NISTFunction[] = [
 ];
 
 export default function Countermeasures() {
-  const [countermeasures, setCountermeasures] = useState<Countermeasure[]>([
-    {
-      threatId: "T001",
-      description:
-        "Implement Cloud Security Posture Management (CSPM) tools with Infrastructure as Code (IaC) security reviews",
-      nistFunction: "Protect",
-      implementationTimeline: "3-6 months",
-      estimatedCost: "R150,000 - R300,000",
-      effectivenessPercentage: 75,
-      totalRiskScore: 19.2,
-      residualRiskScore: 4.8,
-    },
-  ]);
+  const [countermeasures, setCountermeasures] = useState<Countermeasure[]>([]);
+  const [threats, setThreats] = useState<Threat[]>([]);
+
+  // this function loads the data from localStorage on component mount
+  useEffect(() => {
+    const defaultCountermeasures: Countermeasure[] = [
+      {
+        threatId: "T001",
+        description:
+          "Implement Cloud Security Posture Management (CSPM) tools with Infrastructure as Code (IaC) security reviews",
+        nistFunction: "Protect",
+        implementationTimeline: "3-6 months",
+        estimatedCost: "R150,000 - R300,000",
+        effectivenessPercentage: 75,
+        totalRiskScore: 19.2,
+        residualRiskScore: 4.8,
+      },
+    ];
+
+    const savedCountermeasures = loadCountermeasures(defaultCountermeasures);
+    const savedThreats = loadThreats();
+    setCountermeasures(savedCountermeasures);
+    setThreats(savedThreats);
+  }, []);
 
   const [showForm, setShowForm] = useState(false);
   const [editingCountermeasure, setEditingCountermeasure] =
@@ -81,8 +97,8 @@ export default function Countermeasures() {
     )
       return;
 
-    // Get the total risk score for the selected threat (mock data for now)
-    const totalRiskScore = 19.2; // This would come from risk calculations
+    // this then gets the total risk score for the selected threat
+    const totalRiskScore = 19.2;
     const residualRiskScore = calculateResidualRiskScore(
       totalRiskScore,
       formData.effectivenessPercentage
@@ -94,16 +110,18 @@ export default function Countermeasures() {
       residualRiskScore,
     };
 
+    let updatedCountermeasures: Countermeasure[];
     if (editingCountermeasure) {
-      setCountermeasures(
-        countermeasures.map((c) =>
-          c.threatId === editingCountermeasure.threatId ? newCountermeasure : c
-        )
+      updatedCountermeasures = countermeasures.map((c) =>
+        c.threatId === editingCountermeasure.threatId ? newCountermeasure : c
       );
       setEditingCountermeasure(null);
     } else {
-      setCountermeasures([...countermeasures, newCountermeasure]);
+      updatedCountermeasures = [...countermeasures, newCountermeasure];
     }
+
+    setCountermeasures(updatedCountermeasures);
+    saveCountermeasures(updatedCountermeasures);
 
     setFormData({
       threatId: "",
@@ -130,7 +148,11 @@ export default function Countermeasures() {
   };
 
   const handleDelete = (threatId: string) => {
-    setCountermeasures(countermeasures.filter((c) => c.threatId !== threatId));
+    const updatedCountermeasures = countermeasures.filter(
+      (c) => c.threatId !== threatId
+    );
+    setCountermeasures(updatedCountermeasures);
+    saveCountermeasures(updatedCountermeasures);
   };
 
   const getResidualRiskColor = (score: number) => {
@@ -178,7 +200,6 @@ export default function Countermeasures() {
         </button>
       </div>
 
-      {/* Add/Edit Form */}
       {showForm && (
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -201,7 +222,7 @@ export default function Countermeasures() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
                 >
                   <option value="">Select a threat</option>
-                  {sampleThreats.map((threat) => (
+                  {threats.map((threat) => (
                     <option key={threat.id} value={threat.id}>
                       {threat.name}
                     </option>
@@ -307,7 +328,6 @@ export default function Countermeasures() {
               </div>
             </div>
 
-            {/* Residual Risk Preview */}
             {formData.threatId && (
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
@@ -369,7 +389,6 @@ export default function Countermeasures() {
         </div>
       )}
 
-      {/* NIST Framework Information */}
       <div className="bg-blue-50 p-4 rounded-lg">
         <h3 className="font-semibold text-blue-900 mb-2">
           NIST Cybersecurity Framework Functions
@@ -455,7 +474,7 @@ export default function Countermeasures() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {countermeasures.map((countermeasure) => {
-                const threat = sampleThreats.find(
+                const threat = threats.find(
                   (t) => t.id === countermeasure.threatId
                 );
                 return (
@@ -530,7 +549,6 @@ export default function Countermeasures() {
         </div>
       </div>
 
-      {/* Effectiveness Guidelines */}
       <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="font-semibold text-gray-900 mb-3">
           Effectiveness Guidelines

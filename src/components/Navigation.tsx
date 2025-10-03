@@ -8,7 +8,9 @@ import {
   AlertTriangle,
   Settings,
   FileText,
+  Trash2,
 } from "lucide-react";
+import { clearAllData } from "@/utils/localStorage";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: BarChart3 },
@@ -33,7 +35,7 @@ export default function Navigation() {
             </h1>
           </div>
 
-          <div className="flex space-x-1">
+          <div className="flex space-x-1 items-center">
             {navigation.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -57,4 +59,3 @@ export default function Navigation() {
     </nav>
   );
 }
-

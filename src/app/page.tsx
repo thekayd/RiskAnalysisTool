@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { sampleRiskAnalysisData } from "@/data/sampleData";
 import { RiskAnalysisData, RiskLevel } from "@/types";
 import { getRiskLevelColor } from "@/utils/riskCalculations";
+import { loadCompleteDataset } from "@/utils/localStorage";
 import {
   AlertTriangle,
   Shield,
@@ -13,10 +14,15 @@ import {
   Download,
 } from "lucide-react";
 import RiskChart from "@/components/RiskChart";
-import { exportToExcel } from "@/utils/excelExport";
 
 export default function Dashboard() {
   const [data, setData] = useState<RiskAnalysisData>(sampleRiskAnalysisData);
+
+  // this function loads the data from localStorage on component mount
+  useEffect(() => {
+    const savedData = loadCompleteDataset(sampleRiskAnalysisData);
+    setData(savedData);
+  }, []);
 
   const riskStats = {
     total: data.riskCalculations.length,
@@ -32,13 +38,8 @@ export default function Dashboard() {
     .sort((a, b) => b.totalRiskScore - a.totalRiskScore)
     .slice(0, 5);
 
-  const handleExportExcel = () => {
-    exportToExcel(data, "RiskAnalysisTool.xlsx");
-  };
-
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -49,16 +50,8 @@ export default function Dashboard() {
             Cybersecurity Framework
           </p>
         </div>
-        <button
-          onClick={handleExportExcel}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Export to Excel
-        </button>
       </div>
 
-      {/* Risk Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
@@ -129,7 +122,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Charts and Visualizations */}
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -139,7 +131,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Top Risks Table */}
       <div className="bg-white rounded-lg shadow-sm border">
         <div className="px-6 py-4 border-b">
           <h3 className="text-lg font-semibold text-gray-900">

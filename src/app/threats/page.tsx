@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Threat, ThreatCategory } from "@/types";
 import { generateThreatId } from "@/utils/riskCalculations";
+import { saveThreats, loadThreats } from "@/utils/localStorage";
 import { Plus, Edit, Trash2, AlertTriangle } from "lucide-react";
 
 const threatCategories: ThreatCategory[] = [
@@ -18,28 +19,36 @@ const threatCategories: ThreatCategory[] = [
 ];
 
 export default function ThreatRegister() {
-  const [threats, setThreats] = useState<Threat[]>([
-    {
-      id: "T001",
-      name: "Misconfigured Web Application Firewall",
-      description:
-        "WAF misconfiguration enabling SSRF attacks and unauthorized access to cloud infrastructure",
-      category: "Cloud Infrastructure",
-      owner: "Cloud Security Team",
-      dateIdentified: "2024-01-15",
-      status: "Open",
-    },
-    {
-      id: "T002",
-      name: "Inadequate Privileged Access Management",
-      description:
-        "Insufficient controls over privileged access leading to unauthorized escalation and data access",
-      category: "Access Control",
-      owner: "Identity & Access Management",
-      dateIdentified: "2024-01-15",
-      status: "Open",
-    },
-  ]);
+  const [threats, setThreats] = useState<Threat[]>([]);
+
+  // this function loads the threats from localStorage on component mount
+  useEffect(() => {
+    const defaultThreats: Threat[] = [
+      {
+        id: "T001",
+        name: "Misconfigured Web Application Firewall",
+        description:
+          "WAF misconfiguration enabling SSRF attacks and unauthorized access to cloud infrastructure",
+        category: "Cloud Infrastructure",
+        owner: "Cloud Security Team",
+        dateIdentified: "2024-01-15",
+        status: "Open",
+      },
+      {
+        id: "T002",
+        name: "Inadequate Privileged Access Management",
+        description:
+          "Insufficient controls over privileged access leading to unauthorized escalation and data access",
+        category: "Access Control",
+        owner: "Identity & Access Management",
+        dateIdentified: "2024-01-15",
+        status: "Open",
+      },
+    ];
+
+    const savedThreats = loadThreats(defaultThreats);
+    setThreats(savedThreats);
+  }, []);
 
   const [showForm, setShowForm] = useState(false);
   const [editingThreat, setEditingThreat] = useState<Threat | null>(null);
@@ -55,11 +64,11 @@ export default function ThreatRegister() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    let updatedThreats: Threat[];
+
     if (editingThreat) {
-      setThreats(
-        threats.map((t) =>
-          t.id === editingThreat.id ? { ...formData, id: editingThreat.id } : t
-        )
+      updatedThreats = threats.map((t) =>
+        t.id === editingThreat.id ? { ...formData, id: editingThreat.id } : t
       );
       setEditingThreat(null);
     } else {
@@ -67,8 +76,11 @@ export default function ThreatRegister() {
         ...formData,
         id: generateThreatId(threats.length),
       };
-      setThreats([...threats, newThreat]);
+      updatedThreats = [...threats, newThreat];
     }
+
+    setThreats(updatedThreats);
+    saveThreats(updatedThreats);
 
     setFormData({
       name: "",
@@ -95,7 +107,9 @@ export default function ThreatRegister() {
   };
 
   const handleDelete = (id: string) => {
-    setThreats(threats.filter((t) => t.id !== id));
+    const updatedThreats = threats.filter((t) => t.id !== id);
+    setThreats(updatedThreats);
+    saveThreats(updatedThreats);
   };
 
   const getStatusColor = (status: string) => {
@@ -132,7 +146,6 @@ export default function ThreatRegister() {
         </button>
       </div>
 
-      {/* Add/Edit Form */}
       {showForm && (
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -281,7 +294,6 @@ export default function ThreatRegister() {
         </div>
       )}
 
-      {/* Threats Table */}
       <div className="bg-white rounded-lg shadow-sm border">
         <div className="px-6 py-4 border-b">
           <h3 className="text-lg font-semibold text-gray-900">

@@ -9,7 +9,7 @@ export const sampleRiskAnalysisData: RiskAnalysisData = {
         "WAF misconfiguration enabling SSRF attacks and unauthorized access to cloud infrastructure",
       category: "Cloud Infrastructure",
       owner: "Cloud Security Team",
-      dateIdentified: "2024-01-15",
+      dateIdentified: "2024-07-16",
       status: "Open",
     },
     {
@@ -19,7 +19,7 @@ export const sampleRiskAnalysisData: RiskAnalysisData = {
         "Insufficient controls over privileged access leading to unauthorized escalation and data access",
       category: "Access Control",
       owner: "Identity & Access Management",
-      dateIdentified: "2024-01-15",
+      dateIdentified: "2024-07-16",
       status: "Open",
     },
     {
@@ -29,7 +29,7 @@ export const sampleRiskAnalysisData: RiskAnalysisData = {
         "Lack of real-time monitoring and anomaly detection capabilities for cloud environments",
       category: "Cloud Infrastructure",
       owner: "Security Operations Center",
-      dateIdentified: "2024-01-15",
+      dateIdentified: "2024-07-16",
       status: "Open",
     },
     {
@@ -39,7 +39,7 @@ export const sampleRiskAnalysisData: RiskAnalysisData = {
         "Poor visibility and management of cloud assets leading to security gaps",
       category: "Cloud Infrastructure",
       owner: "Cloud Operations",
-      dateIdentified: "2024-01-15",
+      dateIdentified: "2024-07-16",
       status: "Open",
     },
     {
@@ -49,7 +49,7 @@ export const sampleRiskAnalysisData: RiskAnalysisData = {
         "Former AWS employee exploiting knowledge of cloud infrastructure for unauthorized access",
       category: "Insider Threat",
       owner: "Third-Party Risk Management",
-      dateIdentified: "2024-01-15",
+      dateIdentified: "2024-07-16",
       status: "Open",
     },
   ],

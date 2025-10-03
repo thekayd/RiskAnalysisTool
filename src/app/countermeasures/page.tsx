@@ -23,7 +23,7 @@ const sampleThreats: Threat[] = [
     description: "WAF misconfiguration enabling SSRF attacks",
     category: "Cloud Infrastructure",
     owner: "Cloud Security Team",
-    dateIdentified: "2024-01-15",
+    dateIdentified: "2024-07-16",
     status: "Open",
   },
   {
@@ -32,7 +32,7 @@ const sampleThreats: Threat[] = [
     description: "Insufficient controls over privileged access",
     category: "Access Control",
     owner: "Identity & Access Management",
-    dateIdentified: "2024-01-15",
+    dateIdentified: "2024-07-16",
     status: "Open",
   },
 ];

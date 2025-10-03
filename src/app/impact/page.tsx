@@ -15,7 +15,7 @@ const sampleThreats: Threat[] = [
     description: "WAF misconfiguration enabling SSRF attacks",
     category: "Cloud Infrastructure",
     owner: "Cloud Security Team",
-    dateIdentified: "2024-01-15",
+    dateIdentified: "2024-07-16",
     status: "Open",
   },
   {
@@ -24,7 +24,7 @@ const sampleThreats: Threat[] = [
     description: "Insufficient controls over privileged access",
     category: "Access Control",
     owner: "Identity & Access Management",
-    dateIdentified: "2024-01-15",
+    dateIdentified: "2024-07-16",
     status: "Open",
   },
 ];
@@ -37,7 +37,7 @@ export default function ImpactAssessment() {
       reputational: 5,
       operational: 4,
       regulatory: 5,
-      weightedImpactScore: 91.0,
+      weightedImpactScore: 4.8,
     },
   ]);
 
@@ -106,7 +106,7 @@ export default function ImpactAssessment() {
         <h1 className="text-3xl font-bold text-gray-900">Impact Assessment</h1>
         <p className="text-gray-600 mt-2">
           Evaluate the potential impact of identified threats across four key
-          dimensions
+          areas: financial, reputational, operational, and regulatory.
         </p>
       </div>
 

@@ -18,7 +18,7 @@ const sampleThreats: Threat[] = [
     description: "WAF misconfiguration enabling SSRF attacks",
     category: "Cloud Infrastructure",
     owner: "Cloud Security Team",
-    dateIdentified: "2024-01-15",
+    dateIdentified: "2024-07-16",
     status: "Open",
   },
   {
@@ -27,7 +27,7 @@ const sampleThreats: Threat[] = [
     description: "Insufficient controls over privileged access",
     category: "Access Control",
     owner: "Identity & Access Management",
-    dateIdentified: "2024-01-15",
+    dateIdentified: "2024-07-16",
     status: "Open",
   },
 ];
@@ -306,28 +306,34 @@ export default function LikelihoodAssessment() {
           <div>
             <div className="flex items-center mb-2">
               <User className="h-4 w-4 text-red-600 mr-2" />
-              <span className="font-medium">Threat Actor Capability</span>
+              <span className="font-medium text-gray-700">
+                Threat Actor Capability
+              </span>
             </div>
             <p className="text-gray-600">
-              Skills, resources, and motivation of potential adversaries
+              Various skills, resources, and motivation of potential threat
+              actors
             </p>
           </div>
           <div>
             <div className="flex items-center mb-2">
               <Target className="h-4 w-4 text-orange-600 mr-2" />
-              <span className="font-medium">Opportunity</span>
+              <span className="font-medium text-gray-700">Opportunity</span>
             </div>
             <p className="text-gray-600">
-              Availability of vulnerabilities and exposure of attack surfaces
+              Availability of vulnerabilities and exposure of attack surfaces to
+              the threat actor
             </p>
           </div>
           <div>
             <div className="flex items-center mb-2">
               <History className="h-4 w-4 text-blue-600 mr-2" />
-              <span className="font-medium">Historical Precedent</span>
+              <span className="font-medium text-gray-700">
+                Historical Precedent
+              </span>
             </div>
             <p className="text-gray-600">
-              Past incidents in the organization or similar institutions
+              Past incidents in the organization or any similar institutions
             </p>
           </div>
         </div>

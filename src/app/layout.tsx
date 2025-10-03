@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Risk Analysis Tool",
   description:
-    "Comprehensive cybersecurity risk analysis tool based on NIST Cybersecurity Framework",
+    "A comprehensive cybersecurity risk analysis tool based on NIST Cybersecurity Framework",
 };
 
 export default function RootLayout({

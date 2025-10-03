@@ -345,7 +345,7 @@ export default function ThreatRegister() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(threat.dateIdentified).toLocaleDateString()}
+                    {threat.dateIdentified}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">

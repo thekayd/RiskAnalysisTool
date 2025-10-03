@@ -45,7 +45,7 @@ export default function Dashboard() {
             Risk Analysis Dashboard
           </h1>
           <p className="text-gray-600 mt-2">
-            Comprehensive cybersecurity risk assessment based on NIST
+            A comprehensive cybersecurity risk assessment based on NIST
             Cybersecurity Framework
           </p>
         </div>

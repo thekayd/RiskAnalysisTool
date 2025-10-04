@@ -8,29 +8,30 @@ import {
   Legend,
   Tooltip,
 } from "recharts";
-import { RiskCalculation } from "@/types";
+import { RiskCalculation, RiskLevel } from "@/types";
 
 interface RiskChartProps {
   data: RiskCalculation[];
 }
 
-const COLORS = {
+// pie chart for visulaizations form the amount of risk levels there are.
+const variouscolors = {
   Low: "#10B981",
   Medium: "#F59E0B",
   High: "#F97316",
   Critical: "#EF4444",
 };
 
-export default function RiskChart({ data }: RiskChartProps) {
-  const riskDistribution = data.reduce((acc, risk) => {
-    acc[risk.riskLevel] = (acc[risk.riskLevel] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+export default function RiskAnalysisChart({ data }: RiskChartProps) {
+  const counts = {} as Record<RiskLevel, number>;
+  data.forEach((risk) => {
+    counts[risk.riskLevel] = (counts[risk.riskLevel] || 0) + 1;
+  });
 
-  const chartData = Object.entries(riskDistribution).map(([level, count]) => ({
+  const chartData = Object.entries(counts).map(([level, count]) => ({
     name: level,
     value: count,
-    color: COLORS[level as keyof typeof COLORS],
+    color: variouscolors[level as keyof typeof variouscolors],
   }));
 
   return (
@@ -57,4 +58,3 @@ export default function RiskChart({ data }: RiskChartProps) {
     </div>
   );
 }
-

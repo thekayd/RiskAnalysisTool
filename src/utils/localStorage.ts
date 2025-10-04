@@ -15,8 +15,8 @@ const STORAGE_KEYS = {
   COUNTERMEASURES: "risk-analysis-countermeasures",
 };
 
-//
-export function saveToStorage<T>(key: string, data: T[]): void {
+//this saves the data onto the local storage
+export function saveToLocalStorage<T>(key: string, data: T[]): void {
   try {
     localStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
@@ -24,7 +24,8 @@ export function saveToStorage<T>(key: string, data: T[]): void {
   }
 }
 
-export function loadFromStorage<T>(key: string, fallback: T[] = []): T[] {
+// this then loads the data from the local storage onto the page
+export function loadFromLocalStorage<T>(key: string, fallback: T[] = []): T[] {
   try {
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : fallback;
@@ -34,65 +35,63 @@ export function loadFromStorage<T>(key: string, fallback: T[] = []): T[] {
   }
 }
 
-// Specific functions for each data type
+// these are the functions for each data type to save and load the data from the local storage
+// this saves and loads the threats
 export function saveThreats(threats: Threat[]): void {
-  saveToStorage(STORAGE_KEYS.THREATS, threats);
+  saveToLocalStorage(STORAGE_KEYS.THREATS, threats);
 }
 
 export function loadThreats(fallback: Threat[] = []): Threat[] {
-  return loadFromStorage(STORAGE_KEYS.THREATS, fallback);
+  return loadFromLocalStorage(STORAGE_KEYS.THREATS, fallback);
 }
 
+// this saves and loads the impact assessments data
 export function saveImpactAssessments(assessments: ImpactAssessment[]): void {
-  saveToStorage(STORAGE_KEYS.IMPACT_ASSESSMENTS, assessments);
+  saveToLocalStorage(STORAGE_KEYS.IMPACT_ASSESSMENTS, assessments);
 }
 
 export function loadImpactAssessments(
   fallback: ImpactAssessment[] = []
 ): ImpactAssessment[] {
-  return loadFromStorage(STORAGE_KEYS.IMPACT_ASSESSMENTS, fallback);
+  return loadFromLocalStorage(STORAGE_KEYS.IMPACT_ASSESSMENTS, fallback);
 }
 
+// this saves and loads the ;likelihood assessments dat
 export function saveLikelihoodAssessments(
   assessments: LikelihoodAssessment[]
 ): void {
-  saveToStorage(STORAGE_KEYS.LIKELIHOOD_ASSESSMENTS, assessments);
+  saveToLocalStorage(STORAGE_KEYS.LIKELIHOOD_ASSESSMENTS, assessments);
 }
 
 export function loadLikelihoodAssessments(
   fallback: LikelihoodAssessment[] = []
 ): LikelihoodAssessment[] {
-  return loadFromStorage(STORAGE_KEYS.LIKELIHOOD_ASSESSMENTS, fallback);
+  return loadFromLocalStorage(STORAGE_KEYS.LIKELIHOOD_ASSESSMENTS, fallback);
 }
 
+// this then saves and loads the calculations for the risks
 export function saveRiskCalculations(calculations: RiskCalculation[]): void {
-  saveToStorage(STORAGE_KEYS.RISK_CALCULATIONS, calculations);
+  saveToLocalStorage(STORAGE_KEYS.RISK_CALCULATIONS, calculations);
 }
 
 export function loadRiskCalculations(
   fallback: RiskCalculation[] = []
 ): RiskCalculation[] {
-  return loadFromStorage(STORAGE_KEYS.RISK_CALCULATIONS, fallback);
+  return loadFromLocalStorage(STORAGE_KEYS.RISK_CALCULATIONS, fallback);
 }
 
+// this then also saves and loads the countermeasures data for the countermeasures page
 export function saveCountermeasures(countermeasures: Countermeasure[]): void {
-  saveToStorage(STORAGE_KEYS.COUNTERMEASURES, countermeasures);
+  saveToLocalStorage(STORAGE_KEYS.COUNTERMEASURES, countermeasures);
 }
 
 export function loadCountermeasures(
   fallback: Countermeasure[] = []
 ): Countermeasure[] {
-  return loadFromStorage(STORAGE_KEYS.COUNTERMEASURES, fallback);
+  return loadFromLocalStorage(STORAGE_KEYS.COUNTERMEASURES, fallback);
 }
 
-// function to clear all data from local storage
-export function clearAllData(): void {
-  Object.values(STORAGE_KEYS).forEach((key) => {
-    localStorage.removeItem(key);
-  });
-}
-
-// loads the dataset from local storage
+// this then loads the dataset for the page from local storage
 export function loadCompleteDataset(
   fallback: RiskAnalysisData
 ): RiskAnalysisData {
@@ -107,7 +106,7 @@ export function loadCompleteDataset(
   };
 }
 
-// this saves the dataset
+// this saves the dataset for the page to local storage for risk analysis
 export function saveCompleteDataset(data: RiskAnalysisData): void {
   saveThreats(data.threats);
   saveImpactAssessments(data.impactAssessments);

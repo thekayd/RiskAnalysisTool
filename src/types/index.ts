@@ -21,19 +21,19 @@ export type ThreatCategory =
 
 export interface ImpactAssessment {
   threatId: string;
-  financial: number; // 1-5 scale
-  reputational: number; // 1-5 scale
-  operational: number; // 1-5 scale
-  regulatory: number; // 1-5 scale
+  financial: number;
+  reputational: number;
+  operational: number;
+  regulatory: number;
   weightedImpactScore: number;
 }
 
 export interface LikelihoodAssessment {
   threatId: string;
-  threatActorCapability: number; // 1-5 scale
-  opportunity: number; // 1-5 scale
-  historicalPrecedent: number; // 1-5 scale
-  likelihoodScore: number; // average of the three factors
+  threatActorCapability: number;
+  opportunity: number;
+  historicalPrecedent: number;
+  likelihoodScore: number;
 }
 
 export interface RiskCalculation {
@@ -53,7 +53,7 @@ export interface Countermeasure {
   nistFunction: NISTFunction;
   implementationTimeline: string;
   estimatedCost: string;
-  effectivenessPercentage: number; // 20-95%
+  effectivenessPercentage: number;
   totalRiskScore: number;
   residualRiskScore: number;
 }
@@ -73,32 +73,24 @@ export interface RiskAnalysisData {
   countermeasures: Countermeasure[];
 }
 
-export interface ImpactWeights {
+export interface WeightImpact {
   financial: number;
   reputational: number;
   operational: number;
   regulatory: number;
 }
 
-export const DEFAULT_IMPACT_WEIGHTS: ImpactWeights = {
+export const Impact_Weights = {
   financial: 0.3,
   reputational: 0.3,
   operational: 0.2,
   regulatory: 0.2,
 };
 
-export const RISK_LEVEL_THRESHOLDS = {
-  Low: 5,
-  Medium: 12,
-  High: 19,
-  Critical: 25,
-};
-
-export const SCORE_LABELS = {
+export const Score_Labels = {
   1: "Very Low",
   2: "Low",
   3: "Medium",
   4: "High",
   5: "Very High",
 } as const;
-

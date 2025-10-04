@@ -5,37 +5,13 @@ import {
   LikelihoodAssessment as LikelihoodAssessmentType,
   Threat,
 } from "@/types";
-import {
-  calculateLikelihoodScore,
-  getScoreLabel,
-} from "@/utils/riskCalculations";
+import { calculateLikelihoodScore, ScoreLabel } from "@/utils/riskCalculations";
 import {
   saveLikelihoodAssessments,
   loadLikelihoodAssessments,
   loadThreats,
 } from "@/utils/localStorage";
 import { User, Target, History, Calculator } from "lucide-react";
-
-const sampleThreats: Threat[] = [
-  {
-    id: "T001",
-    name: "Misconfigured Web Application Firewall",
-    description: "WAF misconfiguration enabling SSRF attacks",
-    category: "Cloud Infrastructure",
-    owner: "Cloud Security Team",
-    dateIdentified: "2024-07-16",
-    status: "Open",
-  },
-  {
-    id: "T002",
-    name: "Inadequate Privileged Access Management",
-    description: "Insufficient controls over privileged access",
-    category: "Access Control",
-    owner: "Identity & Access Management",
-    dateIdentified: "2024-07-16",
-    status: "Open",
-  },
-];
 
 export default function LikelihoodAssessment() {
   const [assessments, setAssessments] = useState<LikelihoodAssessmentType[]>(
@@ -72,10 +48,13 @@ export default function LikelihoodAssessment() {
 
     if (!selectedThreat) return;
 
+    //calculates the liklihood score for the selected threat
     const likelihoodScore = calculateLikelihoodScore({
       ...formData,
       threatId: selectedThreat,
     });
+
+    // this then creates a new likelihood assessment and adds it to the exisiting array
     const newAssessment: LikelihoodAssessmentType = {
       threatId: selectedThreat,
       threatActorCapability: formData.threatActorCapability,
@@ -107,7 +86,7 @@ export default function LikelihoodAssessment() {
     setSelectedThreat("");
   };
 
-  const getLikelihoodColor = (score: number) => {
+  const LiklihoodColors = (score: number) => {
     if (score >= 4.5) return "text-red-600 bg-red-100";
     if (score >= 3.5) return "text-orange-600 bg-orange-100";
     if (score >= 2.5) return "text-yellow-600 bg-yellow-100";
@@ -123,7 +102,8 @@ export default function LikelihoodAssessment() {
         </h1>
         <p className="text-gray-600 mt-2">
           Estimate the probability of threats occurring based on three key
-          factors
+          factors: Threat actor capaility, the opportunity and if its ever
+          occured before.
         </p>
       </div>
 
@@ -134,7 +114,7 @@ export default function LikelihoodAssessment() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Threat *
+              Select Threat
             </label>
             <select
               required
@@ -179,11 +159,11 @@ export default function LikelihoodAssessment() {
                       className="mr-3"
                     />
                     <span className="text-sm">
-                      {score} - {getScoreLabel(score)} (
+                      {score} - {ScoreLabel(score)} (
                       {score === 1
-                        ? "Script kiddies"
+                        ? "Low threats"
                         : score === 5
-                        ? "Advanced persistent threats"
+                        ? "Advanced threats"
                         : ""}
                       )
                     </span>
@@ -219,11 +199,11 @@ export default function LikelihoodAssessment() {
                       className="mr-3"
                     />
                     <span className="text-sm">
-                      {score} - {getScoreLabel(score)} (
+                      {score} - {ScoreLabel(score)} (
                       {score === 1
                         ? "Highly secured"
                         : score === 5
-                        ? "Wide open"
+                        ? "Low Security"
                         : ""}
                       )
                     </span>
@@ -259,11 +239,11 @@ export default function LikelihoodAssessment() {
                       className="mr-3"
                     />
                     <span className="text-sm">
-                      {score} - {getScoreLabel(score)} (
+                      {score} - {ScoreLabel(score)} (
                       {score === 1
-                        ? "Never occurred"
+                        ? "Never happened"
                         : score === 5
-                        ? "Frequent occurrence"
+                        ? "Frequent"
                         : ""}
                       )
                     </span>
@@ -282,7 +262,7 @@ export default function LikelihoodAssessment() {
                 </span>
               </div>
               <span
-                className={`px-3 py-1 rounded-full text-sm font-semibold ${getLikelihoodColor(
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${LiklihoodColors(
                   calculateLikelihoodScore({
                     ...formData,
                     threatId: selectedThreat,
@@ -311,47 +291,6 @@ export default function LikelihoodAssessment() {
             </button>
           </div>
         </form>
-      </div>
-
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <h3 className="font-semibold text-blue-900 mb-2">
-          Likelihood Assessment Factors
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <div className="flex items-center mb-2">
-              <User className="h-4 w-4 text-red-600 mr-2" />
-              <span className="font-medium text-gray-700">
-                Threat Actor Capability
-              </span>
-            </div>
-            <p className="text-gray-600">
-              Various skills, resources, and motivation of potential threat
-              actors
-            </p>
-          </div>
-          <div>
-            <div className="flex items-center mb-2">
-              <Target className="h-4 w-4 text-orange-600 mr-2" />
-              <span className="font-medium text-gray-700">Opportunity</span>
-            </div>
-            <p className="text-gray-600">
-              Availability of vulnerabilities and exposure of attack surfaces to
-              the threat actor
-            </p>
-          </div>
-          <div>
-            <div className="flex items-center mb-2">
-              <History className="h-4 w-4 text-blue-600 mr-2" />
-              <span className="font-medium text-gray-700">
-                Historical Precedent
-              </span>
-            </div>
-            <p className="text-gray-600">
-              Past incidents in the organization or any similar institutions
-            </p>
-          </div>
-        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border">
@@ -404,7 +343,7 @@ export default function LikelihoodAssessment() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${getLikelihoodColor(
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${LiklihoodColors(
                           assessment.likelihoodScore
                         )}`}
                       >

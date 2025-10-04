@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Threat, ThreatCategory } from "@/types";
-import { generateThreatId } from "@/utils/riskCalculations";
+import { ThreatIdGenerator } from "@/utils/riskCalculations";
 import { saveThreats, loadThreats } from "@/utils/localStorage";
-import { Plus, Edit, Trash2, AlertTriangle } from "lucide-react";
+import { Plus, Edit, Trash2 } from "lucide-react";
 
 const threatCategories: ThreatCategory[] = [
   "Cloud Infrastructure",
@@ -61,6 +61,7 @@ export default function ThreatRegister() {
     status: "Open",
   });
 
+  // handles the submission of the threat form as well as editing it
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -74,7 +75,7 @@ export default function ThreatRegister() {
     } else {
       const newThreat: Threat = {
         ...formData,
-        id: generateThreatId(threats.length),
+        id: ThreatIdGenerator(threats.length),
       };
       updatedThreats = [...threats, newThreat];
     }
@@ -106,25 +107,22 @@ export default function ThreatRegister() {
     setShowForm(true);
   };
 
+  //deletes the selected threat using their id
   const handleDelete = (id: string) => {
     const updatedThreats = threats.filter((t) => t.id !== id);
     setThreats(updatedThreats);
     saveThreats(updatedThreats);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Open":
-        return "bg-red-100 text-red-800";
-      case "In Progress":
-        return "bg-yellow-100 text-yellow-800";
-      case "Closed":
-        return "bg-gray-100 text-gray-800";
-      case "Mitigated":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
+  const StatusColors = (status: Threat["status"]) => {
+    //for ui
+    const colors = {
+      Open: "bg-red-100 text-red-800",
+      "In Progress": "bg-yellow-100 text-yellow-800",
+      Closed: "bg-gray-100 text-gray-800",
+      Mitigated: "bg-green-100 text-green-800",
+    };
+    return colors[status] || "bg-gray-100 text-gray-800";
   };
 
   return (
@@ -133,7 +131,7 @@ export default function ThreatRegister() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Threat Register</h1>
           <p className="text-gray-600 mt-2">
-            Identify and document potential cybersecurity threats to your
+            Identify and create potential cybersecurity threats to your
             organization
           </p>
         </div>
@@ -155,7 +153,7 @@ export default function ThreatRegister() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Threat Name *
+                  Threat Name
                 </label>
                 <input
                   type="text"
@@ -171,7 +169,7 @@ export default function ThreatRegister() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category *
+                  Category
                 </label>
                 <select
                   required
@@ -195,7 +193,7 @@ export default function ThreatRegister() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description *
+                Description
               </label>
               <textarea
                 required
@@ -212,7 +210,7 @@ export default function ThreatRegister() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Owner *
+                  Owner
                 </label>
                 <input
                   type="text"
@@ -228,7 +226,7 @@ export default function ThreatRegister() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date Identified *
+                  Date Identified
                 </label>
                 <input
                   type="date"
@@ -243,7 +241,7 @@ export default function ThreatRegister() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status *
+                  Status
                 </label>
                 <select
                   required
@@ -349,7 +347,7 @@ export default function ThreatRegister() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${StatusColors(
                         threat.status
                       )}`}
                     >

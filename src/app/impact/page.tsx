@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { ImpactAssessment as ImpactAssessmentType, Threat } from "@/types";
 import {
-  calculateWeightedImpactScore,
-  getScoreLabel,
+  weightedImpactScoreCalculation,
+  ScoreLabel,
 } from "@/utils/riskCalculations";
 import {
   saveImpactAssessments,
@@ -12,27 +12,6 @@ import {
   loadThreats,
 } from "@/utils/localStorage";
 import { DollarSign, Users, Settings, Shield, Calculator } from "lucide-react";
-
-const sampleThreats: Threat[] = [
-  {
-    id: "T001",
-    name: "Misconfigured Web Application Firewall",
-    description: "WAF misconfiguration enabling SSRF attacks",
-    category: "Cloud Infrastructure",
-    owner: "Cloud Security Team",
-    dateIdentified: "2024-07-16",
-    status: "Open",
-  },
-  {
-    id: "T002",
-    name: "Inadequate Privileged Access Management",
-    description: "Insufficient controls over privileged access",
-    category: "Access Control",
-    owner: "Identity & Access Management",
-    dateIdentified: "2024-07-16",
-    status: "Open",
-  },
-];
 
 export default function ImpactAssessment() {
   const [assessments, setAssessments] = useState<ImpactAssessmentType[]>([]);
@@ -69,13 +48,16 @@ export default function ImpactAssessment() {
 
     if (!selectedThreat) return;
 
-    const weightedScore = calculateWeightedImpactScore({
+    // this calculates the wighted score for impact assessments
+    const weightedScore = weightedImpactScoreCalculation({
       threatId: selectedThreat,
       financial: formData.financial,
       reputational: formData.reputational,
       operational: formData.operational,
       regulatory: formData.regulatory,
     });
+
+    // this then creates new impact assessments and add them to the esisiting arrays
     const newAssessment: ImpactAssessmentType = {
       threatId: selectedThreat,
       financial: formData.financial,
@@ -109,7 +91,8 @@ export default function ImpactAssessment() {
     setSelectedThreat("");
   };
 
-  const getImpactColor = (score: number) => {
+  // color for design ui
+  const ImpactColor = (score: number) => {
     if (score >= 4.5) return "text-red-600 bg-red-100";
     if (score >= 3.5) return "text-orange-600 bg-orange-100";
     if (score >= 2.5) return "text-yellow-600 bg-yellow-100";
@@ -134,7 +117,7 @@ export default function ImpactAssessment() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Threat *
+              Select Threat
             </label>
             <select
               required
@@ -180,7 +163,7 @@ export default function ImpactAssessment() {
                       className="mr-3"
                     />
                     <span className="text-sm">
-                      {score} - {getScoreLabel(score)} (
+                      {score} - {ScoreLabel(score)} (
                       {score === 1
                         ? "Minimal cost"
                         : score === 5
@@ -221,7 +204,7 @@ export default function ImpactAssessment() {
                       className="mr-3"
                     />
                     <span className="text-sm">
-                      {score} - {getScoreLabel(score)} (
+                      {score} - {ScoreLabel(score)} (
                       {score === 1
                         ? "No reputation damage"
                         : score === 5
@@ -262,7 +245,7 @@ export default function ImpactAssessment() {
                       className="mr-3"
                     />
                     <span className="text-sm">
-                      {score} - {getScoreLabel(score)} (
+                      {score} - {ScoreLabel(score)} (
                       {score === 1
                         ? "No operational impact"
                         : score === 5
@@ -303,7 +286,7 @@ export default function ImpactAssessment() {
                       className="mr-3"
                     />
                     <span className="text-sm">
-                      {score} - {getScoreLabel(score)} (
+                      {score} - {ScoreLabel(score)} (
                       {score === 1
                         ? "No regulatory issues"
                         : score === 5
@@ -326,8 +309,8 @@ export default function ImpactAssessment() {
                 </span>
               </div>
               <span
-                className={`px-3 py-1 rounded-full text-sm font-semibold ${getImpactColor(
-                  calculateWeightedImpactScore({
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${ImpactColor(
+                  weightedImpactScoreCalculation({
                     threatId: selectedThreat,
                     financial: formData.financial,
                     reputational: formData.reputational,
@@ -336,7 +319,7 @@ export default function ImpactAssessment() {
                   })
                 )}`}
               >
-                {calculateWeightedImpactScore({
+                {weightedImpactScoreCalculation({
                   threatId: selectedThreat,
                   financial: formData.financial,
                   reputational: formData.reputational,
@@ -361,30 +344,6 @@ export default function ImpactAssessment() {
             </button>
           </div>
         </form>
-      </div>
-
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <h3 className="font-semibold text-blue-900 mb-2">
-          Impact Assessment Weights
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div className="flex items-center">
-            <DollarSign className="h-4 w-4 text-green-600 mr-2" />
-            <span className="text-gray-500">Financial: 30%</span>
-          </div>
-          <div className="flex items-center">
-            <Users className="h-4 w-4 text-blue-600 mr-2" />
-            <span className="text-gray-500">Reputational: 30%</span>
-          </div>
-          <div className="flex items-center">
-            <Settings className="h-4 w-4 text-orange-600 mr-2" />
-            <span className="text-gray-500">Operational: 20%</span>
-          </div>
-          <div className="flex items-center">
-            <Shield className="h-4 w-4 text-purple-600 mr-2" />
-            <span className="text-gray-500">Regulatory: 20%</span>
-          </div>
-        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border">
@@ -443,7 +402,7 @@ export default function ImpactAssessment() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${getImpactColor(
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${ImpactColor(
                           assessment.weightedImpactScore
                         )}`}
                       >

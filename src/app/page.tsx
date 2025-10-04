@@ -2,17 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { sampleRiskAnalysisData } from "@/data/sampleData";
-import { RiskAnalysisData, RiskLevel } from "@/types";
-import { getRiskLevelColor } from "@/utils/riskCalculations";
+import { RiskAnalysisData } from "@/types";
+import { RiskLevelColor } from "@/utils/riskCalculations";
 import { loadCompleteDataset } from "@/utils/localStorage";
-import {
-  AlertTriangle,
-  Shield,
-  TrendingUp,
-  FileText,
-  BarChart3,
-  Download,
-} from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import RiskChart from "@/components/RiskChart";
 
 export default function Dashboard() {
@@ -24,6 +17,7 @@ export default function Dashboard() {
     setData(savedData);
   }, []);
 
+  //calculates the risk lengths to count how many risks there are at different levels
   const riskStats = {
     total: data.riskCalculations.length,
     critical: data.riskCalculations.filter((r) => r.riskLevel === "Critical")
@@ -34,6 +28,7 @@ export default function Dashboard() {
     low: data.riskCalculations.filter((r) => r.riskLevel === "Low").length,
   };
 
+  //this then sorts the risks by total risk score and takes the top 5
   const topRisks = data.riskCalculations
     .sort((a, b) => b.totalRiskScore - a.totalRiskScore)
     .slice(0, 5);
@@ -67,9 +62,6 @@ export default function Dashboard() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-red-100 rounded-full flex items-center justify-center">
-              <span className="text-red-600 font-bold">C</span>
-            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Critical</p>
               <p className="text-2xl font-bold text-red-600">
@@ -81,9 +73,6 @@ export default function Dashboard() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-orange-100 rounded-full flex items-center justify-center">
-              <span className="text-orange-600 font-bold">H</span>
-            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">High</p>
               <p className="text-2xl font-bold text-orange-600">
@@ -95,9 +84,6 @@ export default function Dashboard() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-yellow-100 rounded-full flex items-center justify-center">
-              <span className="text-yellow-600 font-bold">M</span>
-            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Medium</p>
               <p className="text-2xl font-bold text-yellow-600">
@@ -109,9 +95,6 @@ export default function Dashboard() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
-              <span className="text-green-600 font-bold">L</span>
-            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Low</p>
               <p className="text-2xl font-bold text-green-600">
@@ -168,7 +151,7 @@ export default function Dashboard() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getRiskLevelColor(
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${RiskLevelColor(
                         risk.riskLevel
                       )}`}
                     >

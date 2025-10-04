@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Countermeasure, NISTFunction, Threat } from "@/types";
+import { Countermeasure, NISTFunction, Threat, RiskCalculation } from "@/types";
 import {
   calculateResidualRiskScore,
   validateEffectiveness,
@@ -10,37 +10,9 @@ import {
   saveCountermeasures,
   loadCountermeasures,
   loadThreats,
+  loadRiskCalculations,
 } from "@/utils/localStorage";
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Shield,
-  Clock,
-  DollarSign,
-  Target,
-} from "lucide-react";
-
-const sampleThreats: Threat[] = [
-  {
-    id: "T001",
-    name: "Misconfigured Web Application Firewall",
-    description: "WAF misconfiguration enabling SSRF attacks",
-    category: "Cloud Infrastructure",
-    owner: "Cloud Security Team",
-    dateIdentified: "2024-07-16",
-    status: "Open",
-  },
-  {
-    id: "T002",
-    name: "Inadequate Privileged Access Management",
-    description: "Insufficient controls over privileged access",
-    category: "Access Control",
-    owner: "Identity & Access Management",
-    dateIdentified: "2024-07-16",
-    status: "Open",
-  },
-];
+import { Plus, Edit, Trash2, Clock, DollarSign, Target } from "lucide-react";
 
 const nistFunctions: NISTFunction[] = [
   "Identify",
@@ -53,14 +25,17 @@ const nistFunctions: NISTFunction[] = [
 export default function Countermeasures() {
   const [countermeasures, setCountermeasures] = useState<Countermeasure[]>([]);
   const [threats, setThreats] = useState<Threat[]>([]);
+  const [riskCalculations, setRiskCalculations] = useState<RiskCalculation[]>(
+    []
+  );
 
   // this function loads the data from localStorage on component mount
   useEffect(() => {
-    const defaultCountermeasures: Countermeasure[] = [
+    const CountermeasuresData: Countermeasure[] = [
       {
         threatId: "T001",
         description:
-          "Implement Cloud Security Posture Management (CSPM) tools with Infrastructure as Code (IaC) security reviews",
+          "Implement Cloud Security Posture Management tools with Infrastructural security reviews",
         nistFunction: "Protect",
         implementationTimeline: "3-6 months",
         estimatedCost: "R150,000 - R300,000",
@@ -70,10 +45,12 @@ export default function Countermeasures() {
       },
     ];
 
-    const savedCountermeasures = loadCountermeasures(defaultCountermeasures);
+    const savedCountermeasures = loadCountermeasures(CountermeasuresData);
     const savedThreats = loadThreats();
+    const savedRiskCalculations = loadRiskCalculations();
     setCountermeasures(savedCountermeasures);
     setThreats(savedThreats);
+    setRiskCalculations(savedRiskCalculations);
   }, []);
 
   const [showForm, setShowForm] = useState(false);
@@ -88,6 +65,7 @@ export default function Countermeasures() {
     effectivenessPercentage: 50,
   });
 
+  // handles the submission of the countermeasure form as well as to edit it
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -98,18 +76,23 @@ export default function Countermeasures() {
       return;
 
     // this then gets the total risk score for the selected threat
-    const totalRiskScore = 19.2;
+    const riskCalculation = riskCalculations.find(
+      (r) => r.threatId === formData.threatId
+    );
+    const totalRiskScore = riskCalculation ? riskCalculation.totalRiskScore : 0;
     const residualRiskScore = calculateResidualRiskScore(
       totalRiskScore,
       formData.effectivenessPercentage
     );
 
+    // this then creates a new countermeasure and adds it to the array with the total risk and residual scores
     const newCountermeasure: Countermeasure = {
       ...formData,
       totalRiskScore,
       residualRiskScore,
     };
 
+    // this then updates the countermeaseures array with new ones
     let updatedCountermeasures: Countermeasure[];
     if (editingCountermeasure) {
       updatedCountermeasures = countermeasures.map((c) =>
@@ -134,6 +117,7 @@ export default function Countermeasures() {
     setShowForm(false);
   };
 
+  // this then edits the countermeasure
   const handleEdit = (countermeasure: Countermeasure) => {
     setEditingCountermeasure(countermeasure);
     setFormData({
@@ -147,6 +131,7 @@ export default function Countermeasures() {
     setShowForm(true);
   };
 
+  // this then handles the deletion of the countermeasure
   const handleDelete = (threatId: string) => {
     const updatedCountermeasures = countermeasures.filter(
       (c) => c.threatId !== threatId
@@ -155,15 +140,17 @@ export default function Countermeasures() {
     saveCountermeasures(updatedCountermeasures);
   };
 
-  const getResidualRiskColor = (score: number) => {
+  //color handling for residual risks
+  const ResidualRiskColors = (score: number) => {
     if (score >= 20) return "text-red-600 bg-red-100";
     if (score >= 13) return "text-orange-600 bg-orange-100";
     if (score >= 6) return "text-yellow-600 bg-yellow-100";
     return "text-green-600 bg-green-100";
   };
 
-  const getNISTColor = (function_: NISTFunction) => {
-    switch (function_) {
+  // this is for the information of the nist functions, just giving them different colors
+  const NISTColor = (NISTFunction: NISTFunction) => {
+    switch (NISTFunction) {
       case "Identify":
         return "bg-blue-100 text-blue-800";
       case "Protect":
@@ -200,6 +187,7 @@ export default function Countermeasures() {
         </button>
       </div>
 
+      {/*shows the form when editing or adding a new countermeasure*/}
       {showForm && (
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -211,7 +199,7 @@ export default function Countermeasures() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Threat *
+                  Threat
                 </label>
                 <select
                   required
@@ -232,7 +220,7 @@ export default function Countermeasures() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  NIST Function *
+                  NIST Function
                 </label>
                 <select
                   required
@@ -256,7 +244,7 @@ export default function Countermeasures() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Countermeasure Description *
+                Countermeasure Description
               </label>
               <textarea
                 required
@@ -273,7 +261,7 @@ export default function Countermeasures() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Implementation Timeline *
+                  Implementation Timeline
                 </label>
                 <input
                   type="text"
@@ -292,7 +280,7 @@ export default function Countermeasures() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Estimated Cost *
+                  Estimated Cost
                 </label>
                 <input
                   type="text"
@@ -308,7 +296,7 @@ export default function Countermeasures() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Effectiveness % *
+                  Effectiveness %
                 </label>
                 <input
                   type="number"
@@ -338,21 +326,35 @@ export default function Countermeasures() {
                     </span>
                   </div>
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${getResidualRiskColor(
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${ResidualRiskColors(
                       calculateResidualRiskScore(
-                        19.2,
+                        (() => {
+                          const currentRiskCalculation = riskCalculations.find(
+                            (r) => r.threatId === formData.threatId
+                          );
+                          return currentRiskCalculation
+                            ? currentRiskCalculation.totalRiskScore
+                            : 0;
+                        })(),
                         formData.effectivenessPercentage
                       )
                     )}`}
                   >
                     {calculateResidualRiskScore(
-                      19.2,
+                      (() => {
+                        const currentRiskCalculation = riskCalculations.find(
+                          (r) => r.threatId === formData.threatId
+                        );
+                        return currentRiskCalculation
+                          ? currentRiskCalculation.totalRiskScore
+                          : 0;
+                      })(),
                       formData.effectivenessPercentage
                     ).toFixed(1)}
                   </span>
                 </div>
                 <div className="mt-2 text-xs text-gray-600">
-                  Formula: Total Risk Score × (1 - Effectiveness%)
+                  Formula: Total Risk Score x (1 - Effectiveness%)
                 </div>
               </div>
             )}
@@ -398,44 +400,35 @@ export default function Countermeasures() {
             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 mr-2">
               Identify
             </span>
-            <span className="text-gray-600">
-              Asset management, risk assessment
-            </span>
+            <span className="text-gray-600">Risk assessment</span>
           </div>
           <div className="flex items-center">
             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 mr-2">
               Protect
             </span>
-            <span className="text-gray-600">
-              Access control, security controls
-            </span>
+            <span className="text-gray-600">Security controls</span>
           </div>
           <div className="flex items-center">
             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 mr-2">
               Detect
             </span>
-            <span className="text-gray-600">Monitoring, anomaly detection</span>
+            <span className="text-gray-600">Threat detection</span>
           </div>
           <div className="flex items-center">
             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800 mr-2">
               Respond
             </span>
-            <span className="text-gray-600">
-              Incident response, communications
-            </span>
+            <span className="text-gray-600">Incident response</span>
           </div>
           <div className="flex items-center">
             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 mr-2">
               Recover
             </span>
-            <span className="text-gray-600">
-              Recovery planning, improvements
-            </span>
+            <span className="text-gray-600">Mitigation planning</span>
           </div>
         </div>
       </div>
 
-      {/* Countermeasures Table */}
       <div className="bg-white rounded-lg shadow-sm border">
         <div className="px-6 py-4 border-b">
           <h3 className="text-lg font-semibold text-gray-900">
@@ -494,7 +487,7 @@ export default function Countermeasures() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getNISTColor(
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${NISTColor(
                           countermeasure.nistFunction
                         )}`}
                       >
@@ -518,7 +511,7 @@ export default function Countermeasures() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${getResidualRiskColor(
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${ResidualRiskColors(
                           countermeasure.residualRiskScore
                         )}`}
                       >
@@ -558,33 +551,25 @@ export default function Countermeasures() {
             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 mr-3">
               20-40%
             </span>
-            <span className="text-gray-600">
-              Low effectiveness - Basic controls
-            </span>
+            <span className="text-gray-600">Low effectiveness</span>
           </div>
           <div className="flex items-center">
             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 mr-3">
               40-60%
             </span>
-            <span className="text-gray-600">
-              Medium effectiveness - Standard controls
-            </span>
+            <span className="text-gray-600">Medium effectiveness</span>
           </div>
           <div className="flex items-center">
             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 mr-3">
               60-80%
             </span>
-            <span className="text-gray-600">
-              High effectiveness - Strong controls
-            </span>
+            <span className="text-gray-600">High effectiveness</span>
           </div>
           <div className="flex items-center">
             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 mr-3">
               80-95%
             </span>
-            <span className="text-gray-600">
-              Very high effectiveness - Comprehensive controls
-            </span>
+            <span className="text-gray-600">Very high effectiveness</span>
           </div>
         </div>
       </div>

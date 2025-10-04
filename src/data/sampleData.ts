@@ -178,7 +178,7 @@ export const sampleRiskAnalysisData: RiskAnalysisData = {
     {
       threatId: "T001",
       description:
-        "Implement Cloud Security Posture Management (CSPM) tools with Infrastructure as Code (IaC) security reviews",
+        "Implement Cloud Security Posture Management tools with Infrastructural security reviews",
       nistFunction: "Protect",
       implementationTimeline: "3-6 months",
       estimatedCost: "R150,000 - R300,000",
@@ -189,7 +189,7 @@ export const sampleRiskAnalysisData: RiskAnalysisData = {
     {
       threatId: "T002",
       description:
-        "Deploy Privileged Access Management (PAM) solution with session monitoring and least privilege principles",
+        "Deploy Privileged Access Management solution with session monitoring and least privilege principles",
       nistFunction: "Protect",
       implementationTimeline: "2-4 months",
       estimatedCost: "R100,000 - R200,000",
@@ -200,7 +200,7 @@ export const sampleRiskAnalysisData: RiskAnalysisData = {
     {
       threatId: "T003",
       description:
-        "Implement cloud-native SIEM with User and Entity Behavior Analytics (UEBA) and 24/7 SOC monitoring",
+        "Implement cloud-native SIEM with User and Entity Behavior Analytics and 24/7 SOC monitoring",
       nistFunction: "Detect",
       implementationTimeline: "4-8 months",
       estimatedCost: "R200,000 - R400,000",
@@ -222,7 +222,7 @@ export const sampleRiskAnalysisData: RiskAnalysisData = {
     {
       threatId: "T005",
       description:
-        "Enhanced vendor risk management, zero-trust architecture, and Data Loss Prevention (DLP) solutions",
+        "Enhanced vendor risk management, zero-trust architecture, and Data Loss Prevention solutions",
       nistFunction: "Protect",
       implementationTimeline: "6-12 months",
       estimatedCost: "R300,000 - R500,000",

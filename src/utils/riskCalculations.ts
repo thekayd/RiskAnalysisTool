@@ -3,15 +3,16 @@ import {
   LikelihoodAssessment,
   RiskCalculation,
   Countermeasure,
-  ImpactWeights,
+  WeightImpact,
   RiskLevel,
-  DEFAULT_IMPACT_WEIGHTS,
-  RISK_LEVEL_THRESHOLDS,
+  Impact_Weights,
 } from "@/types";
 
-export function calculateWeightedImpactScore(
+// This page is for calculations done for the overall risk analysis system
+
+export function weightedImpactScoreCalculation(
   impact: Omit<ImpactAssessment, "weightedImpactScore">,
-  weights: ImpactWeights = DEFAULT_IMPACT_WEIGHTS
+  weights: WeightImpact = Impact_Weights
 ): number {
   return (
     impact.financial * weights.financial +
@@ -39,10 +40,10 @@ export function calculateTotalRiskScore(
   return weightedImpactScore * likelihoodScore;
 }
 
-export function determineRiskLevel(totalRiskScore: number): RiskLevel {
-  if (totalRiskScore >= RISK_LEVEL_THRESHOLDS.Critical) return "Critical";
-  if (totalRiskScore >= RISK_LEVEL_THRESHOLDS.High) return "High";
-  if (totalRiskScore >= RISK_LEVEL_THRESHOLDS.Medium) return "Medium";
+export function RiskLevelTiers(totalRiskScore: number): RiskLevel {
+  if (totalRiskScore >= 25) return "Critical";
+  if (totalRiskScore >= 19) return "High";
+  if (totalRiskScore >= 6) return "Medium";
   return "Low";
 }
 
@@ -53,7 +54,7 @@ export function calculateResidualRiskScore(
   return totalRiskScore * (1 - effectivenessPercentage / 100);
 }
 
-export function getRiskLevelColor(riskLevel: RiskLevel): string {
+export function RiskLevelColor(riskLevel: RiskLevel): string {
   switch (riskLevel) {
     case "Low":
       return "bg-green-100 text-green-800 border-green-200";
@@ -68,7 +69,8 @@ export function getRiskLevelColor(riskLevel: RiskLevel): string {
   }
 }
 
-export function getScoreLabel(score: number): string {
+// this is for the score labels
+export function ScoreLabel(score: number): string {
   if (score <= 1.5) return "Very Low";
   if (score <= 2.5) return "Low";
   if (score <= 3.5) return "Medium";
@@ -76,15 +78,14 @@ export function getScoreLabel(score: number): string {
   return "Very High";
 }
 
-export function generateThreatId(index: number): string {
+export function ThreatIdGenerator(index: number): string {
   return `T${String(index + 1).padStart(3, "0")}`;
 }
 
-export function validateScore(score: number): boolean {
+export function ScoreValidator(score: number): boolean {
   return score >= 1 && score <= 5 && Number.isInteger(score);
 }
 
 export function validateEffectiveness(effectiveness: number): boolean {
   return effectiveness >= 20 && effectiveness <= 95;
 }
-

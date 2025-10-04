@@ -8,10 +8,9 @@ import {
   AlertTriangle,
   Settings,
   FileText,
-  Trash2,
 } from "lucide-react";
-import { clearAllData } from "@/utils/localStorage";
 
+// link navigations
 const navigation = [
   { name: "Dashboard", href: "/", icon: BarChart3 },
   { name: "Threat Register", href: "/threats", icon: AlertTriangle },

@@ -9,8 +9,8 @@ import type {
 } from "@/types";
 import {
   calculateTotalRiskScore,
-  determineRiskLevel,
-  getRiskLevelColor,
+  RiskLevelTiers,
+  RiskLevelColor,
 } from "@/utils/riskCalculations";
 import {
   saveRiskCalculations,
@@ -19,64 +19,7 @@ import {
   loadImpactAssessments,
   loadLikelihoodAssessments,
 } from "@/utils/localStorage";
-import { AlertTriangle, TrendingUp, BarChart3, Filter } from "lucide-react";
-
-const sampleThreats: Threat[] = [
-  {
-    id: "T001",
-    name: "Misconfigured Web Application Firewall",
-    description: "WAF misconfiguration enabling SSRF attacks",
-    category: "Cloud Infrastructure",
-    owner: "Cloud Security Team",
-    dateIdentified: "2024-01-15",
-    status: "Open",
-  },
-  {
-    id: "T002",
-    name: "Inadequate Privileged Access Management",
-    description: "Insufficient controls over privileged access",
-    category: "Access Control",
-    owner: "Identity & Access Management",
-    dateIdentified: "2024-01-15",
-    status: "Open",
-  },
-];
-
-const sampleImpactAssessments: ImpactAssessment[] = [
-  {
-    threatId: "T001",
-    financial: 5,
-    reputational: 5,
-    operational: 4,
-    regulatory: 5,
-    weightedImpactScore: 4.8,
-  },
-  {
-    threatId: "T002",
-    financial: 5,
-    reputational: 5,
-    operational: 3,
-    regulatory: 5,
-    weightedImpactScore: 4.6,
-  },
-];
-
-const sampleLikelihoodAssessments: LikelihoodAssessment[] = [
-  {
-    threatId: "T001",
-    threatActorCapability: 4,
-    opportunity: 4,
-    historicalPrecedent: 4,
-    likelihoodScore: 4.0,
-  },
-  {
-    threatId: "T002",
-    threatActorCapability: 4,
-    opportunity: 4,
-    historicalPrecedent: 4,
-    likelihoodScore: 4.0,
-  },
-];
+import { AlertTriangle, TrendingUp } from "lucide-react";
 
 export default function RiskCalculation() {
   const [riskCalculations, setRiskCalculations] = useState<RiskCalculation[]>(
@@ -102,8 +45,6 @@ export default function RiskCalculation() {
     setLikelihoodAssessments(savedLikelihoodAssessments);
     setRiskCalculations(savedRiskCalculations);
   }, []);
-  const [filterLevel, setFilterLevel] = useState<string>("All");
-  const [sortBy, setSortBy] = useState<string>("totalRiskScore");
 
   useEffect(() => {
     // this then calculates the risks based on impact and likelihood assessments
@@ -120,7 +61,7 @@ export default function RiskCalculation() {
           impact.weightedImpactScore,
           likelihood.likelihoodScore
         );
-        const riskLevel = determineRiskLevel(totalRiskScore);
+        const riskLevel = RiskLevelTiers(totalRiskScore);
 
         calculations.push({
           threatId: threat.id,
@@ -137,20 +78,7 @@ export default function RiskCalculation() {
     saveRiskCalculations(calculations);
   }, [threats, impactAssessments, likelihoodAssessments]);
 
-  const filteredRisks = riskCalculations
-    .filter((risk) => filterLevel === "All" || risk.riskLevel === filterLevel)
-    .sort((a, b) => {
-      if (sortBy === "totalRiskScore")
-        return b.totalRiskScore - a.totalRiskScore;
-      if (sortBy === "threatName")
-        return a.threatName.localeCompare(b.threatName);
-      if (sortBy === "riskLevel") {
-        const levelOrder = { Critical: 4, High: 3, Medium: 2, Low: 1 };
-        return levelOrder[b.riskLevel] - levelOrder[a.riskLevel];
-      }
-      return 0;
-    });
-
+  // calcualtes the risk stats to associate it with the risk calculations
   const riskStats = {
     total: riskCalculations.length,
     critical: riskCalculations.filter((r) => r.riskLevel === "Critical").length,
@@ -164,7 +92,7 @@ export default function RiskCalculation() {
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Risk Calculation</h1>
         <p className="text-gray-600 mt-2">
-          View calculated risk scores based on impact and likelihood assessments
+          View calculated risk scores based on impact and likelihood
         </p>
       </div>
 
@@ -183,9 +111,6 @@ export default function RiskCalculation() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-red-100 rounded-full flex items-center justify-center">
-              <span className="text-red-600 font-bold">C</span>
-            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Critical</p>
               <p className="text-2xl font-bold text-red-600">
@@ -197,9 +122,6 @@ export default function RiskCalculation() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-orange-100 rounded-full flex items-center justify-center">
-              <span className="text-orange-600 font-bold">H</span>
-            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">High</p>
               <p className="text-2xl font-bold text-orange-600">
@@ -211,9 +133,6 @@ export default function RiskCalculation() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-yellow-100 rounded-full flex items-center justify-center">
-              <span className="text-yellow-600 font-bold">M</span>
-            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Medium</p>
               <p className="text-2xl font-bold text-yellow-600">
@@ -225,51 +144,12 @@ export default function RiskCalculation() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
-              <span className="text-green-600 font-bold">L</span>
-            </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Low</p>
               <p className="text-2xl font-bold text-green-600">
                 {riskStats.low}
               </p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white p-4 rounded-lg shadow-sm border">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center space-x-2">
-            <Filter className="h-4 w-4 text-gray-500" />
-            <span className="text-sm font-medium text-gray-700">
-              Filter by Risk Level:
-            </span>
-            <select
-              value={filterLevel}
-              onChange={(e) => setFilterLevel(e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-            >
-              <option value="All">All</option>
-              <option value="Critical">Critical</option>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
-            </select>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <BarChart3 className="h-4 w-4 text-gray-500" />
-            <span className="text-sm font-medium text-gray-700">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
-            >
-              <option value="totalRiskScore">Risk Score (High to Low)</option>
-              <option value="threatName">Threat Name (A to Z)</option>
-              <option value="riskLevel">Risk Level</option>
-            </select>
           </div>
         </div>
       </div>
@@ -281,7 +161,7 @@ export default function RiskCalculation() {
         <div className="text-sm text-blue-800">
           <p className="mb-2">
             <strong>
-              Total Risk Score = Weighted Impact Score × Likelihood Score
+              Total Risk Score = Weighted Impact Score x Likelihood Score
             </strong>
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -309,7 +189,7 @@ export default function RiskCalculation() {
       <div className="bg-white rounded-lg shadow-sm border">
         <div className="px-6 py-4 border-b">
           <h3 className="text-lg font-semibold text-gray-900">
-            Risk Calculation Results ({filteredRisks.length})
+            Risk Calculation Results ({riskCalculations.length})
           </h3>
         </div>
         <div className="overflow-x-auto">
@@ -337,7 +217,7 @@ export default function RiskCalculation() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredRisks.map((risk, index) => (
+              {riskCalculations.map((risk, index) => (
                 <tr key={risk.threatId} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
@@ -358,7 +238,7 @@ export default function RiskCalculation() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getRiskLevelColor(
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${RiskLevelColor(
                         risk.riskLevel
                       )}`}
                     >
@@ -376,14 +256,16 @@ export default function RiskCalculation() {
       </div>
 
       <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="font-semibold text-gray-900 mb-3">Risk Level Legend</h3>
+        <h3 className="font-semibold text-gray-900 mb-3">
+          Risk Level Summaries
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="flex items-center">
             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full border bg-red-100 text-red-800 border-red-200 mr-3">
               Critical
             </span>
             <span className="text-sm text-gray-600">
-              Immediate action required
+              Immediate action needed
             </span>
           </div>
           <div className="flex items-center">
@@ -391,7 +273,7 @@ export default function RiskCalculation() {
               High
             </span>
             <span className="text-sm text-gray-600">
-              Priority mitigation needed
+              Priority mitigation needed with controls
             </span>
           </div>
           <div className="flex items-center">
@@ -399,7 +281,7 @@ export default function RiskCalculation() {
               Medium
             </span>
             <span className="text-sm text-gray-600">
-              Manageable with controls
+              Manageable and not a high risk
             </span>
           </div>
           <div className="flex items-center">

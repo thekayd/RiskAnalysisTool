@@ -6,7 +6,6 @@ import { RiskAnalysisData } from "@/types";
 import { RiskLevelColor } from "@/utils/riskCalculations";
 import { loadCompleteDataset } from "@/utils/localStorage";
 import { AlertTriangle } from "lucide-react";
-import RiskChart from "@/components/RiskChart";
 
 export default function Dashboard() {
   const [data, setData] = useState<RiskAnalysisData>(sampleRiskAnalysisData);
@@ -102,15 +101,6 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Risk Distribution
-          </h3>
-          <RiskChart data={data.riskCalculations} />
         </div>
       </div>
 
